@@ -7,6 +7,8 @@ properties:
   async-db-queries: true
   rate-change: 0.1
   debug-messages: false
+  affect-exp: true
+  affect-drops: true
 mysql:
   hostname: localhost
   username: root

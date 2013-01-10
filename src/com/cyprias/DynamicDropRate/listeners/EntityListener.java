@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.Plugin;
@@ -21,7 +22,10 @@ public class EntityListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDeath(EntityDeathEvent event)  {
-		int exp = event.getDroppedExp();
+		
+		
+		
+		
 		
 		
 		LivingEntity entity = event.getEntity();
@@ -39,24 +43,34 @@ public class EntityListener implements Listener {
 		rate -= rateChange;
 
 		
+		int exp = event.getDroppedExp();
 		
-		int mExp = (int) Math.round(exp * (rate));
-		event.setDroppedExp(mExp);
+		if (Config.getBoolean("properties.affect-exp"))
+			event.setDroppedExp((int) Math.round(exp * rate));
 		
+		
+		if (Config.getBoolean("properties.affect-drops")){
+			List<ItemStack> drops = event.getDrops();
+			int iAmount;
+			for (int i=drops.size()-1;i>=0;i--){
+				iAmount = (int) Math.round(drops.get(i).getAmount() * rate);
+				
+				if (iAmount>0){
+					drops.get(i).setAmount(iAmount);
+				}else
+					drops.remove(i);
+			}
+		}
+		
+		//Can't set rate below zero, don't increase other mob's rate.
 		if (rate < 0)
 			return;
-		
-		
+
 		if (Config.getBoolean("properties.debug-messages"))
-			Logger.info("- Decreasing " + eType + " to " + Plugin.Round(rate*100,2) + "% = " + mExp);
-		
-		
-		
+			Logger.info("- Decreasing " + eType + " to " + Plugin.Round(rate*100,2));
 		
 		Plugin.mobRates.put(eType, rate);
-		
-		
-		
+
 		int rad;
 		EntityType selectedMob;
 		while (true) {
@@ -66,11 +80,7 @@ public class EntityListener implements Listener {
 			if (!selectedMob.equals(eType))
 				break;
 		}
-		
-		
-		
-		
-		
+
 		Double sRate = Plugin.mobRates.get(selectedMob);
 		sRate += rateChange;
 		
@@ -79,17 +89,6 @@ public class EntityListener implements Listener {
 		
 		Plugin.mobRates.put(selectedMob, sRate);
 		
-		
-		/*
-		for (int i=0; i< mobs.size(); i++){
-			//Logger.info("onEntityDeath1: " + mobs.get(i));
-		
-			if (mobs.get(i).equals(mobType)){
-				Logger.info("onEntityDeath2: " + mobType);
-				return;
-			}
-			
-		}*/
 
 	}
 	
