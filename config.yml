@@ -1,0 +1,31 @@
+properties:
+  chat-prefix: '&7[&DDR&7] '
+  db-type: sqlite
+  permission-default: false
+  date-format: "MM/dd/yy h:mm a"
+  check-new-version: true
+  async-db-queries: true
+  rate-change: 0.1
+  debug-messages: false
+mysql:
+  hostname: localhost
+  username: root
+  password: 
+  port: 3306
+  database: minecraft
+  prefix: DDR_
+mobs:
+  - blaze
+  - cavespider
+  - creeper
+  - ghast
+  - lavaslime
+  - silverfish
+  - skelton
+  - slime
+  - spider
+  - witch
+  - witherskull
+  - zombie
+  - Enderman
+  - PigZombie
