@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.Plugin;
+import com.cyprias.DynamicDropRate.database.MySQL.queryReturn;
 
 public class SQLite implements Database {
 	private static String sqlDB;
@@ -60,7 +61,7 @@ public class SQLite implements Database {
 		//"CREATE TABLE " + rates_table+ " (`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, `time` BIGINT NOT NULL, `notify` BOOLEAN NOT NULL DEFAULT '0', `writer` VARCHAR(32) NOT NULL, `player` VARCHAR(32) NOT NULL, `text` TEXT NOT NULL) ENGINE = InnoDB"
 		if (tableExists(rates_table) == false) {
 			Logger.info("Creating SQLite " + rates_table + " table.");
-			stat.executeUpdate("CREATE TABLE " + rates_table+ " (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `time` BIGINT NOT NULL, `notify` BOOLEAN NOT NULL DEFAULT '0', `writer` VARCHAR(32) NOT NULL, `player` VARCHAR(32) NOT NULL, `text` TEXT NOT NULL)");
+			stat.executeUpdate("CREATE TABLE `"+rates_table+"` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `type` VARCHAR(16) NOT NULL, `rate` DOUBLE NOT NULL)");
 		}
 		
 		stat.close();
@@ -127,14 +128,25 @@ public class SQLite implements Database {
 	}
 	
 	@Override
-	public Double getRate(String entityType) {
-		// TODO Auto-generated method stub
-		return null;
+	public Double getRate(String entityType) throws SQLException {
+		queryReturn results = executeQuery("SELECT * FROM `"+rates_table+"` WHERE `type` LIKE ? LIMIT 0 , 1", entityType);
+		ResultSet r = results.result;
+		Double rate = 1.0; //1 = 100%
+		while (r.next()) {
+			rate = r.getDouble(3);
+		}
+		results.close();
+		return rate;
 	}
 
 	@Override
-	public Boolean setRate(String entityType, Double rate) {
-		return null;
+	public Boolean setRate(String entityType, Double rate) throws SQLException {
+		int succsess = executeUpdate("UPDATE `"+rates_table+"` SET `rate` = ? WHERE `type` = ?;", rate, entityType);
+		if (succsess > 0)
+			return true;
+
+		succsess = executeUpdate("INSERT INTO `"+rates_table+"` (`type` ,`rate`) VALUES (?, ?);", entityType, rate);
+		return (succsess > 0) ? true : false;
 	}
 
 }

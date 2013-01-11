@@ -39,7 +39,7 @@ public class MySQL implements Database {
 		Connection con = getConnection();
 		
 		if (tableExists(rates_table) == false) {
-			Logger.info("Creating Notes table.");
+			Logger.info("Creating rates table.");
 			con.prepareStatement("CREATE TABLE `"+rates_table+"` (`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, `type` VARCHAR(16) NOT NULL, `rate` DOUBLE NOT NULL) ENGINE = InnoDB").executeUpdate();
 		}
 		
@@ -137,14 +137,11 @@ public class MySQL implements Database {
 	public Double getRate(String entityType) throws SQLException {
 		queryReturn results = executeQuery("SELECT * FROM `"+rates_table+"` WHERE `type` LIKE ? LIMIT 0 , 1", entityType);
 		ResultSet r = results.result;
-
-		Double rate = 1.0;
+		Double rate = 1.0; //1 = 100%
 		while (r.next()) {
 			rate = r.getDouble(3);
 		}
-		
 		results.close();
-		
 		return rate;
 	}
 
