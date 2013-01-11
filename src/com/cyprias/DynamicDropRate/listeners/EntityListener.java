@@ -28,7 +28,8 @@ public class EntityListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDeath(EntityDeathEvent event)  {
-		
+		if (Config.inStringList("excluded-worlds", event.getEntity().getWorld().getName()))
+			return;
 		
 		EntityDamageEvent dEvent = event.getEntity().getLastDamageCause();
 		if (!(dEvent instanceof EntityDamageByEntityEvent) && Config.getBoolean("properties.only-affect-player-kills") == true) {
@@ -70,7 +71,15 @@ public class EntityListener implements Listener {
 		if (Config.getBoolean("properties.affect-drops")){
 			List<ItemStack> drops = event.getDrops();
 			int iAmount;
+			String sid;
 			for (int i=drops.size()-1;i>=0;i--){
+				sid = String.valueOf(drops.get(i).getTypeId());
+				if (drops.get(i).getDurability() > 0)
+					sid+=":" + drops.get(i).getDurability();
+					
+				if (Config.inStringList("excluded-items", sid))
+					continue;
+
 				iAmount = (int) Math.round(drops.get(i).getAmount() * rate);
 				
 				if (Config.getBoolean("properties.debug-messages"))

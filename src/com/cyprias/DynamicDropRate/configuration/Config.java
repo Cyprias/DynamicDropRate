@@ -29,8 +29,17 @@ public class Config {
 		return plugin.getConfig().getString(property);
 	}
 
-	public static List<String> getStringList (String property) {
+	public static List<String> getStringList(String property) {
 		return plugin.getConfig().getStringList(property);
+	}
+	
+	public static Boolean inStringList(String property, String find){
+		List<String> list = getStringList(property);
+		for (int i=0; i<list.size();i++){
+			if (list.get(i).equalsIgnoreCase(find))
+				return true;
+		}
+		return false;
 	}
 	
 }
