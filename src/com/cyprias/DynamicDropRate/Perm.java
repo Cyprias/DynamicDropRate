@@ -12,9 +12,10 @@ import com.cyprias.DynamicDropRate.configuration.Config;
 public enum Perm {
 
 	VERSION("ddr.version"), 
+	RELOAD("ddr.reload"),
 	LIST("ddr.list"), 
 	
-	PARENT_ADMIN("ddr.admin", VERSION, LIST);
+	PARENT_ADMIN("ddr.admin", VERSION, LIST, RELOAD);
 
 	private Perm(String value, Perm... childrenArray) {
 		this(value, String.format(DEFAULT_ERROR_MESSAGE, value), childrenArray);
@@ -57,6 +58,10 @@ public enum Perm {
 	
 	public void loadPermission(PluginManager pm) {
 		pm.addPermission(bukkitPerm);
+	}
+	
+	public void unloadPermission(PluginManager pm) {
+		pm.removePermission(bukkitPerm);
 	}
 	
 	public String getErrorMessage() {

@@ -4,11 +4,15 @@ import java.util.List;
 
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.Plugin;
@@ -18,14 +22,24 @@ import com.cyprias.DynamicDropRate.configuration.Config;
 public class EntityListener implements Listener {
 
 	
-	
+	static public void unregisterEvents(JavaPlugin instance){
+		EntityDeathEvent.getHandlerList().unregister(instance);
+	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDeath(EntityDeathEvent event)  {
 		
 		
-		
-		
+		EntityDamageEvent dEvent = event.getEntity().getLastDamageCause();
+		if (!(dEvent instanceof EntityDamageByEntityEvent) && Config.getBoolean("properties.only-affect-player-kills") == true) {
+		//	Logger.info("Exiting death due to death having no attacker.");
+			return;
+		}
+		EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) dEvent;
+		if (!(damageEvent.getDamager() instanceof Player) && Config.getBoolean("properties.only-affect-player-kills") == true) {
+		//	Logger.info("Exiting death due to attacker being " + damageEvent.getDamager().getType());
+			return;
+		}
 		
 		
 		LivingEntity entity = event.getEntity();

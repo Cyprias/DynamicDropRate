@@ -2,17 +2,18 @@ properties:
   chat-prefix: '&7[&DDR&7] '
   db-type: sqlite
   permission-default: false
-  date-format: "MM/dd/yy h:mm a"
   check-new-version: true
   async-db-queries: true
   rate-change: 0.1
   debug-messages: false
   affect-exp: true
   affect-drops: true
+  only-affect-player-kills: true
+  save-frequency: 300
 mysql:
   hostname: localhost
   username: root
-  password: 
+  password: CHANGEME
   port: 3306
   database: minecraft
   prefix: DDR_
@@ -23,7 +24,7 @@ mobs:
   - ghast
   - lavaslime
   - silverfish
-  - skelton
+  - skeleton
   - slime
   - spider
   - witch
