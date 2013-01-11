@@ -1,5 +1,5 @@
 properties:
-  chat-prefix: '&7[&DDR&7] '
+  chat-prefix: '&7[&dDDR&7] '
   db-type: sqlite
   permission-default: false
   check-new-version: true

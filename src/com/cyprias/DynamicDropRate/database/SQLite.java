@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.Plugin;
-import com.cyprias.DynamicDropRate.database.MySQL.queryReturn;
 
 public class SQLite implements Database {
 	private static String sqlDB;

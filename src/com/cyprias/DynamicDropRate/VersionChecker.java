@@ -13,57 +13,38 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class VersionChecker {
-	List<versionInfo> versions;
+	public List<versionInfo> versions = new ArrayList<versionInfo>();
 	public VersionChecker(String curseRSS) throws SAXException, IOException, ParserConfigurationException {
-			
-		
 		URL url = new URL(curseRSS);
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(url.openConnection().getInputStream());
 		doc.getDocumentElement().normalize();
 		NodeList nodes = doc.getElementsByTagName("item");
 
 		Element element, subElement;
-		NodeList subNodes;
 
-		//log.info(ChatColor.WHITE + "getVersionInfoTask run B getLenth: " + nodes.getLength());
-		versions = new ArrayList<versionInfo>();
-		
 		if (nodes.getLength() > 0) {
 			versions.clear();
 
 			String title, link, pubDate, description;
 			for (int v = 0; v < nodes.getLength(); v++) {
-
 				element = (Element) nodes.item(v);
-				subNodes = element.getElementsByTagName("title");
-				subElement = (Element) subNodes.item(0);
+				subElement = (Element) element.getElementsByTagName("title").item(0);
 				title = subElement.getChildNodes().item(0).getNodeValue();
 
-				subNodes = element.getElementsByTagName("link");
-				subElement = (Element) subNodes.item(0);
+				subElement = (Element) element.getElementsByTagName("link").item(0);
 				link = subElement.getChildNodes().item(0).getNodeValue();
 
-				subNodes = element.getElementsByTagName("pubDate");
-				subElement = (Element) subNodes.item(0);
+				subElement = (Element) element.getElementsByTagName("pubDate").item(0);
 				pubDate = subElement.getChildNodes().item(0).getNodeValue();
 
-				subNodes = element.getElementsByTagName("description");
-				subElement = (Element) subNodes.item(0);
+				subElement = (Element) element.getElementsByTagName("description").item(0);
 				description = subElement.getChildNodes().item(0).getNodeValue();
+				
 				versions.add(new versionInfo(title, link, pubDate, description));
 			}
 		}
-
-		
 	}
 
-	/*
-	public static void retreiveVersionInfo(JavaPlugin plugin, String curseRSS, Object... args) {
-		getVersionInfoTask task = new getVersionInfoTask(plugin.getServer().getPluginManager(), plugin.getDescription().getName(), curseRSS);
-		task.setArgs(args);
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, task);
-	}
-*/	
 	public static int compareVersions(String a, String b){
 		String[] aParts = a.split("\\.");
 		String[] bParts = b.split("\\.");
@@ -80,8 +61,6 @@ public class VersionChecker {
 		}
 		return 0;
 	}
-	
-	
 
 	public static class versionInfo {
 		private String title;
@@ -114,103 +93,4 @@ public class VersionChecker {
 		}
 	}
 
-	/*
-	private static class getVersionInfoTask implements Runnable {
-		private Object[] args;
-		private String pluginName, curseRSS;
-		private PluginManager pm;
-		public getVersionInfoTask(PluginManager pm, String pluginName, String curseRSS) {
-			this.pm = pm;
-			this.pluginName = pluginName;
-			this.curseRSS = curseRSS;
-		}
-		public void setArgs(Object... args) {
-			this.args = args;
-		}
-
-
-		@Override
-		public void run() {
-			try {
-				URL url = new URL(this.curseRSS);
-				Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(url.openConnection().getInputStream());
-				doc.getDocumentElement().normalize();
-				NodeList nodes = doc.getElementsByTagName("item");
-
-				Element element, subElement;
-				NodeList subNodes;
-
-				//log.info(ChatColor.WHITE + "getVersionInfoTask run B getLenth: " + nodes.getLength());
-				List<versionInfo> versions = new ArrayList<versionInfo>();
-				
-				if (nodes.getLength() > 0) {
-					versions.clear();
-
-					String title, link, pubDate, description;
-					for (int v = 0; v < nodes.getLength(); v++) {
-
-						element = (Element) nodes.item(v);
-						subNodes = element.getElementsByTagName("title");
-						subElement = (Element) subNodes.item(0);
-						title = subElement.getChildNodes().item(0).getNodeValue();
-
-						subNodes = element.getElementsByTagName("link");
-						subElement = (Element) subNodes.item(0);
-						link = subElement.getChildNodes().item(0).getNodeValue();
-
-						subNodes = element.getElementsByTagName("pubDate");
-						subElement = (Element) subNodes.item(0);
-						pubDate = subElement.getChildNodes().item(0).getNodeValue();
-
-						subNodes = element.getElementsByTagName("description");
-						subElement = (Element) subNodes.item(0);
-						description = subElement.getChildNodes().item(0).getNodeValue();
-						versions.add(new versionInfo(title, link, pubDate, description));
-					}
-					
-					//VersionCheckerEvent event = new VersionCheckerEvent(this.pluginName, versions, this.args);
-					//this.pm.callEvent(event);
-				}
-
-			} catch (Exception localException) {
-			}
-		}
-	}*/
-
-	/*
-	public static class VersionCheckerEvent extends Event {
-		private static final HandlerList handlers = new HandlerList(); 
-		public HandlerList getHandlers() { return handlers; }
-		public static HandlerList getHandlerList() { return handlers; }
-		 
-		private List<versionInfo> versions;
-
-		private String pluginName;
-		private Object[] args;
-		public VersionCheckerEvent(String pluginName, List<versionInfo> versions, Object... args) {
-			this.pluginName = pluginName;
-			this.versions = versions;
-			this.args = args;
-		}
-
-		public String getPluginName() {
-			return this.pluginName;
-		}
-
-		public int getVersionCount() {
-			return versions.size();
-		}
-
-		public versionInfo getVersionInfo(int index) {
-			return (versions.size() >= (index+1)) ? versions.get(index) : null;
-		}
-
-		public Object[] getArgs(){
-			return this.args;
-		}
-		
-	}*/
-	
-
-	
 }

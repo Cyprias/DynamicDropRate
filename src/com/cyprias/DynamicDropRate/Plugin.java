@@ -14,17 +14,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 import org.xml.sax.SAXException;
 
 import com.cyprias.DynamicDropRate.VersionChecker.versionInfo;
-import com.cyprias.DynamicDropRate.command.Command;
 import com.cyprias.DynamicDropRate.command.CommandManager;
 import com.cyprias.DynamicDropRate.command.ListCommand;
 import com.cyprias.DynamicDropRate.command.ReloadCommand;
+import com.cyprias.DynamicDropRate.command.VersionCommand;
 import com.cyprias.DynamicDropRate.configuration.Config;
 import com.cyprias.DynamicDropRate.database.Database;
 import com.cyprias.DynamicDropRate.database.MySQL;
@@ -68,7 +67,8 @@ public class Plugin extends JavaPlugin {
 		if (Config.getBoolean("properties.async-db-queries")){
 			instance.getServer().getScheduler().runTaskTimerAsynchronously(instance, new Runnable() {
 				public void run() {
-					Logger.info("Saving rates to DB.");
+					if (Config.getBoolean("properties.debug-messages"))
+						Logger.info("Saving rates to DB.");
 					try {
 						saveMobRates();
 					} catch (SQLException e) {
@@ -81,6 +81,9 @@ public class Plugin extends JavaPlugin {
 			instance.getServer().getScheduler().runTaskAsynchronously(instance, new Runnable() {
 				public void run() {
 					try {
+						if (Config.getBoolean("properties.debug-messages"))
+							Logger.info("loading rate from DB.");
+						
 						loadMobRates();
 					} catch (SQLException e) {e.printStackTrace();}
 				}
@@ -90,7 +93,8 @@ public class Plugin extends JavaPlugin {
 		}else{
 			instance.getServer().getScheduler().runTaskTimer(instance, new Runnable() {
 				public void run() {
-					Logger.info("Saving rates to DB.");
+					if (Config.getBoolean("properties.debug-messages"))
+						Logger.info("Saving rates to DB.");
 					try {
 						saveMobRates();
 					} catch (SQLException e) {
@@ -101,6 +105,8 @@ public class Plugin extends JavaPlugin {
 			}, Config.getInt("properties.save-frequency") * 20L, Config.getInt("properties.save-frequency") * 20L);
 			
 			try {
+				if (Config.getBoolean("properties.debug-messages"))
+					Logger.info("loading rate from DB.");
 				loadMobRates();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -113,12 +119,9 @@ public class Plugin extends JavaPlugin {
 		
 		loadPermissions();
 
-		
 		registerListeners(new EntityListener());
 
-		
-		CommandManager cm = new CommandManager().registerCommand("list", new ListCommand()).registerCommand("reload", new ReloadCommand());
-
+		CommandManager cm = new CommandManager().registerCommand("list", new ListCommand()).registerCommand("reload", new ReloadCommand()).registerCommand("version", new VersionCommand());
 		this.getCommand("ddr").setExecutor(cm);
 		
 		try {
@@ -127,13 +130,8 @@ public class Plugin extends JavaPlugin {
 		} catch (IOException e) {
 		}
 
-		
-		//Plugin instance = Plugin.getInstance();
-		
-
-		
-		
-		
+		if (Config.getBoolean("properties.check-new-version"))
+			checkVersion();
 		
 		Logger.info("enabled.");
 	}
