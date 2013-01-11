@@ -54,11 +54,14 @@ public class ListCommand implements Command {
 		Double rate;
 		List<MobRate> rates = new ArrayList<MobRate>();
 		
+		Double sum = 0.0;
+		
 		for (int i=0; i<Plugin.mobTypes.size(); i++){
 			mob = Plugin.mobTypes.get(i);
 			rate = Plugin.mobRates.get(mob);
 			
 			rates.add(new MobRate(mob, rate));
+			sum+= rate;
 			
 			//.send(sender, mob.getName() + ": " + Plugin.Round(rate*100,2) + "%");
 			
@@ -68,6 +71,8 @@ public class ListCommand implements Command {
 		
 		compareRates comparator = new compareRates();
 		Collections.sort(rates, comparator);
+		
+		ChatUtils.send(sender, rates.size() + " mobs summing " + Plugin.Round((sum/rates.size())*100,2));
 		
 		for (int i=0; i<rates.size(); i++){
 			ChatUtils.send(sender, rates.get(i).type + ": " + Plugin.Round(rates.get(i).rate*100,2) + "%");

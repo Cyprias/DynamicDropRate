@@ -14,8 +14,8 @@ public enum Perm {
 	VERSION("ddr.version"), 
 	RELOAD("ddr.reload"),
 	LIST("ddr.list"), 
-	
-	PARENT_ADMIN("ddr.admin", VERSION, LIST, RELOAD);
+	RESET("ddr.reset"),
+	PARENT_ADMIN("ddr.admin", VERSION, LIST, RELOAD, RESET);
 
 	private Perm(String value, Perm... childrenArray) {
 		this(value, String.format(DEFAULT_ERROR_MESSAGE, value), childrenArray);

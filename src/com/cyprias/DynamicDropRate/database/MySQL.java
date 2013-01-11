@@ -39,8 +39,8 @@ public class MySQL implements Database {
 		Connection con = getConnection();
 		
 		if (tableExists(rates_table) == false) {
-			Logger.info("Creating rates table.");
-			con.prepareStatement("CREATE TABLE `"+rates_table+"` (`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, `type` VARCHAR(16) NOT NULL, `rate` DOUBLE NOT NULL) ENGINE = InnoDB").executeUpdate();
+			Logger.info("Creating "+rates_table+" table.");
+			con.prepareStatement("CREATE TABLE `"+rates_table+"` (`type` VARCHAR(16) NOT NULL, `rate` INT NOT NULL, UNIQUE (`type`)) ENGINE = InnoDB").executeUpdate();
 		}
 		
 	}
@@ -139,7 +139,7 @@ public class MySQL implements Database {
 		ResultSet r = results.result;
 		Double rate = 1.0; //1 = 100%
 		while (r.next()) {
-			rate = r.getDouble(3);
+			rate = r.getDouble("rate");
 		}
 		results.close();
 		return rate;

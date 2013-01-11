@@ -23,6 +23,7 @@ import com.cyprias.DynamicDropRate.VersionChecker.versionInfo;
 import com.cyprias.DynamicDropRate.command.CommandManager;
 import com.cyprias.DynamicDropRate.command.ListCommand;
 import com.cyprias.DynamicDropRate.command.ReloadCommand;
+import com.cyprias.DynamicDropRate.command.ResetCommand;
 import com.cyprias.DynamicDropRate.command.VersionCommand;
 import com.cyprias.DynamicDropRate.configuration.Config;
 import com.cyprias.DynamicDropRate.database.Database;
@@ -121,7 +122,7 @@ public class Plugin extends JavaPlugin {
 
 		registerListeners(new EntityListener());
 
-		CommandManager cm = new CommandManager().registerCommand("list", new ListCommand()).registerCommand("reload", new ReloadCommand()).registerCommand("version", new VersionCommand());
+		CommandManager cm = new CommandManager().registerCommand("list", new ListCommand()).registerCommand("reload", new ReloadCommand()).registerCommand("version", new VersionCommand()).registerCommand("resetrates", new ResetCommand());
 		this.getCommand("ddr").setExecutor(cm);
 		
 		try {
@@ -157,7 +158,7 @@ public class Plugin extends JavaPlugin {
 
 	}
 
-	private void saveMobRates() throws SQLException {
+	public static void saveMobRates() throws SQLException {
 		for (EntityType type : mobTypes) {
 			database.setRate(type.toString(), mobRates.get(type));
 		}

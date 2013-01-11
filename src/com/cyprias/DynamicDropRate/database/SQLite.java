@@ -60,7 +60,7 @@ public class SQLite implements Database {
 		//"CREATE TABLE " + rates_table+ " (`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, `time` BIGINT NOT NULL, `notify` BOOLEAN NOT NULL DEFAULT '0', `writer` VARCHAR(32) NOT NULL, `player` VARCHAR(32) NOT NULL, `text` TEXT NOT NULL) ENGINE = InnoDB"
 		if (tableExists(rates_table) == false) {
 			Logger.info("Creating SQLite " + rates_table + " table.");
-			stat.executeUpdate("CREATE TABLE `"+rates_table+"` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `type` VARCHAR(16) NOT NULL, `rate` DOUBLE NOT NULL)");
+			stat.executeUpdate("CREATE TABLE `"+rates_table+"` (`type` VARCHAR(16) NOT NULL, `rate` INT NOT NULL, UNIQUE (`type`))");
 		}
 		
 		stat.close();
@@ -132,7 +132,7 @@ public class SQLite implements Database {
 		ResultSet r = results.result;
 		Double rate = 1.0; //1 = 100%
 		while (r.next()) {
-			rate = r.getDouble(3);
+			rate = r.getDouble("rate");
 		}
 		results.close();
 		return rate;

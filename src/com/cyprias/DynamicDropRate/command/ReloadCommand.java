@@ -24,7 +24,7 @@ public class ReloadCommand implements Command {
 		
 		Plugin instance = Plugin.getInstance();
 		
-		
+		instance.reloadConfig();
 		instance.getPluginLoader().disablePlugin(instance);
 		instance.getPluginLoader().enablePlugin(instance);
 		
