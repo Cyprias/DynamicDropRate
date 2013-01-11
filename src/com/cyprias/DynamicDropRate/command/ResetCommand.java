@@ -60,6 +60,8 @@ public class ResetCommand implements Command {
 		// http://jd.bukkit.org/doxygen/d6/d7b/EntityType_8java_source.html
 		EntityType eType;
 
+		Plugin.mobTypes.clear();
+		
 		for (String mob : mobs) {
 			eType = EntityType.fromName(mob);
 			if (eType != null) {

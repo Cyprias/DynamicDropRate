@@ -72,14 +72,11 @@ public class ListCommand implements Command {
 		compareRates comparator = new compareRates();
 		Collections.sort(rates, comparator);
 		
-		ChatUtils.send(sender, rates.size() + " mobs summing " + Plugin.Round((sum/rates.size())*100,2));
+		ChatUtils.send(sender, rates.size() + " mobs summing " + Plugin.Round((sum/rates.size())*100,2) + "%");
 		
-		for (int i=0; i<rates.size(); i++){
-			ChatUtils.send(sender, rates.get(i).type + ": " + Plugin.Round(rates.get(i).rate*100,2) + "%");
-			
-			
-			
-		}
+		for (int i=0; i<rates.size(); i++)
+			ChatUtils.send(sender, rates.get(i).type.getName() + ": " + Plugin.Round(rates.get(i).rate*100,2) + "%");
+		
 		
 		
 		

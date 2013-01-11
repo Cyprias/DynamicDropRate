@@ -17,7 +17,7 @@ import com.cyprias.DynamicDropRate.Plugin;
 
 public class CommandManager implements CommandExecutor, Listable {
 	private static final Plugin plugin = Plugin.getInstance();
-	private final Map<String, Command> commands = new HashMap<String, Command>();
+	private final static Map<String, Command> commands = new HashMap<String, Command>();
 
 	public CommandManager() {
 
@@ -28,6 +28,10 @@ public class CommandManager implements CommandExecutor, Listable {
 		return this;
 	}
 
+	public static void unregisterCommands() {
+		commands.clear();
+	}
+	
 	public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String label, String[] args) {
 		boolean help = false;
 		if (args.length == 0 || args[0].equals("?")) {

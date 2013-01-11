@@ -59,15 +59,22 @@ public class EntityListener implements Listener {
 		
 		int exp = event.getDroppedExp();
 		
-		if (Config.getBoolean("properties.affect-exp"))
+		if (Config.getBoolean("properties.affect-exp")){
 			event.setDroppedExp((int) Math.round(exp * rate));
 		
+			if (Config.getBoolean("properties.debug-messages"))
+				Logger.info("Modifying " + eType + "'s exp " + exp + " * " + Plugin.Round(rate*100,2) + "% = " + (int) Math.round(exp * rate));
+			
+		}
 		
 		if (Config.getBoolean("properties.affect-drops")){
 			List<ItemStack> drops = event.getDrops();
 			int iAmount;
 			for (int i=drops.size()-1;i>=0;i--){
 				iAmount = (int) Math.round(drops.get(i).getAmount() * rate);
+				
+				if (Config.getBoolean("properties.debug-messages"))
+					Logger.info("Modifying " + eType + "'s " + drops.get(i).getType() + "x" + drops.get(i).getAmount() + " * " + Plugin.Round(rate*100,2) + "% = x" + Math.round(drops.get(i).getAmount() * rate));
 				
 				if (iAmount>0){
 					drops.get(i).setAmount(iAmount);
@@ -81,7 +88,7 @@ public class EntityListener implements Listener {
 			return;
 
 		if (Config.getBoolean("properties.debug-messages"))
-			Logger.info("- Decreasing " + eType + " to " + Plugin.Round(rate*100,2));
+			Logger.info("- Decreasing " + eType + "'s rate to " + Plugin.Round(rate*100,2));
 		
 		Plugin.mobRates.put(eType, rate);
 
@@ -99,7 +106,7 @@ public class EntityListener implements Listener {
 		sRate += rateChange;
 		
 		if (Config.getBoolean("properties.debug-messages"))
-			Logger.info("+ Increasing " + selectedMob + " to " + Plugin.Round(sRate*100,2) + "%");
+			Logger.info("+ Increasing " + selectedMob + "'s rate to " + Plugin.Round(sRate*100,2) + "%");
 		
 		Plugin.mobRates.put(selectedMob, sRate);
 		

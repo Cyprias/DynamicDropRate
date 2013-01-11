@@ -40,7 +40,7 @@ public class MySQL implements Database {
 		
 		if (tableExists(rates_table) == false) {
 			Logger.info("Creating "+rates_table+" table.");
-			con.prepareStatement("CREATE TABLE `"+rates_table+"` (`type` VARCHAR(16) NOT NULL, `rate` INT NOT NULL, UNIQUE (`type`)) ENGINE = InnoDB").executeUpdate();
+			con.prepareStatement("CREATE TABLE `"+rates_table+"` (`type` VARCHAR(16) NOT NULL, `rate` DOUBLE NOT NULL, UNIQUE (`type`)) ENGINE = InnoDB").executeUpdate();
 		}
 		
 	}

@@ -64,6 +64,8 @@ public class Plugin extends JavaPlugin {
 			return;
 		}
 		
+		CommandManager cm = new CommandManager().registerCommand("list", new ListCommand()).registerCommand("reload", new ReloadCommand()).registerCommand("version", new VersionCommand()).registerCommand("resetrates", new ResetCommand());
+		this.getCommand("ddr").setExecutor(cm);
 		
 		if (Config.getBoolean("properties.async-db-queries")){
 			instance.getServer().getScheduler().runTaskTimerAsynchronously(instance, new Runnable() {
@@ -122,8 +124,10 @@ public class Plugin extends JavaPlugin {
 
 		registerListeners(new EntityListener());
 
-		CommandManager cm = new CommandManager().registerCommand("list", new ListCommand()).registerCommand("reload", new ReloadCommand()).registerCommand("version", new VersionCommand()).registerCommand("resetrates", new ResetCommand());
-		this.getCommand("ddr").setExecutor(cm);
+
+		
+		
+		
 		
 		try {
 			Metrics metrics = new Metrics(this);
@@ -146,6 +150,9 @@ public class Plugin extends JavaPlugin {
 		// http://jd.bukkit.org/doxygen/d6/d7b/EntityType_8java_source.html
 		EntityType eType;
 
+		mobRates.clear();
+		mobTypes.clear();
+		
 		for (String mob : mobs) {
 			eType = EntityType.fromName(mob);
 			if (eType != null) {
@@ -160,7 +167,9 @@ public class Plugin extends JavaPlugin {
 
 	public static void saveMobRates() throws SQLException {
 		for (EntityType type : mobTypes) {
-			database.setRate(type.toString(), mobRates.get(type));
+			Boolean value = database.setRate(type.toString(), mobRates.get(type));
+			
+			//Logger.info("saveMobRates " + type + " " + mobRates.get(type) + " " + value);
 		}
 	}
 
@@ -221,6 +230,10 @@ public class Plugin extends JavaPlugin {
 			permission.unloadPermission(pm);
 		}
 
+		CommandManager.unregisterCommands();
+		this.getCommand("ddr").setExecutor(null);
+		
+		
 		instance.getServer().getScheduler().cancelAllTasks();
 		
 		EntityListener.unregisterEvents(instance);
