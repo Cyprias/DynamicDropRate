@@ -1,7 +1,7 @@
 properties:
   chat-prefix: '&7[&dDDR&7] '
   db-type: sqlite
-  permission-default: false
+  permission-default: op
   check-new-version: true
   async-db-queries: true
   rate-change: 0.1

@@ -32,13 +32,18 @@ public class EntityListener implements Listener {
 			return;
 		
 		EntityDamageEvent dEvent = event.getEntity().getLastDamageCause();
-		if (!(dEvent instanceof EntityDamageByEntityEvent) && Config.getBoolean("properties.only-affect-player-kills") == true) {
-		//	Logger.info("Exiting death due to death having no attacker.");
+
+		if (dEvent instanceof EntityDamageByEntityEvent) {
+			// && Config.getBoolean("properties.only-affect-player-kills") == true
+			
+			EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) dEvent;
+			if (!(damageEvent.getDamager() instanceof Player) && Config.getBoolean("properties.only-affect-player-kills") == true) {
+			//	Logger.info("Exiting death due to attacker being " + damageEvent.getDamager().getType());
+				return;
+			}
 			return;
-		}
-		EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) dEvent;
-		if (!(damageEvent.getDamager() instanceof Player) && Config.getBoolean("properties.only-affect-player-kills") == true) {
-		//	Logger.info("Exiting death due to attacker being " + damageEvent.getDamager().getType());
+		}else if (Config.getBoolean("properties.only-affect-player-kills") == true){
+			//	Logger.info("Exiting death due to death having no attacker.");
 			return;
 		}
 		
@@ -80,6 +85,8 @@ public class EntityListener implements Listener {
 				if (Config.inStringList("excluded-items", sid))
 					continue;
 
+				
+				
 				iAmount = (int) Math.round(drops.get(i).getAmount() * rate);
 				
 				if (Config.getBoolean("properties.debug-messages"))
