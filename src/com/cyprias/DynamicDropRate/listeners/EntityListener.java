@@ -31,29 +31,29 @@ public class EntityListener implements Listener {
 		if (Config.inStringList("excluded-worlds", event.getEntity().getWorld().getName()))
 			return;
 		
-		EntityDamageEvent dEvent = event.getEntity().getLastDamageCause();
-
-		if (dEvent instanceof EntityDamageByEntityEvent) {
-			// && Config.getBoolean("properties.only-affect-player-kills") == true
-			
-			EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) dEvent;
-			if (!(damageEvent.getDamager() instanceof Player) && Config.getBoolean("properties.only-affect-player-kills") == true) {
-			//	Logger.info("Exiting death due to attacker being " + damageEvent.getDamager().getType());
-				return;
-			}
-			return;
-		}else if (Config.getBoolean("properties.only-affect-player-kills") == true){
-			//	Logger.info("Exiting death due to death having no attacker.");
-			return;
-		}
-		
-		
 		LivingEntity entity = event.getEntity();
 		
 		EntityType eType = entity.getType();
 		
 		if (!Plugin.mobRates.containsKey(eType))
 			return;
+
+		EntityDamageEvent dEvent = event.getEntity().getLastDamageCause();
+		if (dEvent instanceof EntityDamageByEntityEvent) {
+
+			EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) dEvent;
+			if (!(damageEvent.getDamager() instanceof Player) && Config.getBoolean("properties.only-affect-player-kills") == true) {
+				if (Config.getBoolean("properties.debug-messages"))
+					Logger.info("Exiting death due to attacker being " + damageEvent.getDamager().getType());
+				return;
+			}
+
+		}else if (Config.getBoolean("properties.only-affect-player-kills") == true){
+			if (Config.getBoolean("properties.debug-messages"))
+				Logger.info("Exiting death due to death having no attacker.");
+			
+			return;
+		}
 		
 		double rateChange = Config.getDouble("properties.rate-change")/100;
 		

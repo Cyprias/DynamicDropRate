@@ -1,3 +1,4 @@
+config-version: 1
 properties:
   chat-prefix: '&7[&dDDR&7] '
   db-type: sqlite
@@ -8,7 +9,7 @@ properties:
   debug-messages: false
   affect-exp: true
   affect-drops: true
-  only-affect-player-kills: true
+  only-affect-player-kills: false
   save-frequency: 300
 mysql:
   hostname: localhost
@@ -23,16 +24,14 @@ mobs:
   - creeper
   - ghast
   - lavaslime
-  - silverfish
   - skeleton
   - slime
   - spider
-  - witch
-  - witherskull
   - zombie
   - Enderman
   - PigZombie
+  - witch
 excluded-worlds:
   - CreativeWorld
-excluded-items:
+excluded-items: 
   - 289

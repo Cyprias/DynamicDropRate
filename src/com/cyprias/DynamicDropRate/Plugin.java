@@ -1,6 +1,8 @@
 package com.cyprias.DynamicDropRate;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -21,6 +24,7 @@ import org.xml.sax.SAXException;
 
 import com.cyprias.DynamicDropRate.VersionChecker.versionInfo;
 import com.cyprias.DynamicDropRate.command.CommandManager;
+import com.cyprias.DynamicDropRate.command.EqualizeCommand;
 import com.cyprias.DynamicDropRate.command.ListCommand;
 import com.cyprias.DynamicDropRate.command.ReloadCommand;
 import com.cyprias.DynamicDropRate.command.ResetCommand;
@@ -35,18 +39,21 @@ public class Plugin extends JavaPlugin {
 	// static PluginDescriptionFile description;
 	private static Plugin instance = null;
 
-	public void onLoad() {
-
-	}
+	//public void onLoad() {}
 
 	public static Database database;
 
 	public void onEnable() {
 		instance = this;
 
-		getConfig().options().copyDefaults(true);
-		saveConfig();
-
+		YamlConfiguration dConfig = YamlConfiguration.loadConfiguration(getResource("config.yml"));
+		File config = new File(getDataFolder(), "config.yml");
+		if (!config.exists() || getConfig().getInt("config-version") < dConfig.getInt("config-version")) { 
+			Logger.info("Copying defaults to config file.");
+			getConfig().options().copyDefaults(true);
+			getConfig().set("config-version", dConfig.getInt("config-version"));
+			saveConfig();
+		}
 		
 		if (Config.getString("properties.db-type").equalsIgnoreCase("mysql")) {
 			database = new MySQL();
@@ -64,7 +71,7 @@ public class Plugin extends JavaPlugin {
 			return;
 		}
 		
-		CommandManager cm = new CommandManager().registerCommand("list", new ListCommand()).registerCommand("reload", new ReloadCommand()).registerCommand("version", new VersionCommand()).registerCommand("resetrates", new ResetCommand());
+		CommandManager cm = new CommandManager().registerCommand("list", new ListCommand()).registerCommand("reload", new ReloadCommand()).registerCommand("version", new VersionCommand()).registerCommand("resetrates", new ResetCommand()).registerCommand("equalize", new EqualizeCommand());
 		this.getCommand("ddr").setExecutor(cm);
 		
 		if (Config.getBoolean("properties.async-db-queries")){
@@ -158,6 +165,8 @@ public class Plugin extends JavaPlugin {
 			if (eType != null) {
 				mobRates.put(eType, database.getRate(eType.getName()));
 				mobTypes.add(eType);
+				if (Config.getBoolean("properties.debug-messages"))
+					Logger.info("Added " + eType + " to tracking.");
 			} else {
 				Logger.warning(mob + " is not a valid mob.");
 			}
