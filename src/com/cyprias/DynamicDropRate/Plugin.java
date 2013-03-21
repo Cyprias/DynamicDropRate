@@ -2,7 +2,6 @@ package com.cyprias.DynamicDropRate;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -176,9 +175,7 @@ public class Plugin extends JavaPlugin {
 
 	public static void saveMobRates() throws SQLException {
 		for (EntityType type : mobTypes) {
-			Boolean value = database.setRate(type.toString(), mobRates.get(type));
-			
-			//Logger.info("saveMobRates " + type + " " + mobRates.get(type) + " " + value);
+			database.setRate(type.toString(), mobRates.get(type));
 		}
 	}
 

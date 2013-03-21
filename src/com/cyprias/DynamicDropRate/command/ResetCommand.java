@@ -1,8 +1,6 @@
 package com.cyprias.DynamicDropRate.command;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -13,8 +11,6 @@ import com.cyprias.DynamicDropRate.ChatUtils;
 import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.Perm;
 import com.cyprias.DynamicDropRate.Plugin;
-import com.cyprias.DynamicDropRate.command.ListCommand.MobRate;
-import com.cyprias.DynamicDropRate.command.ListCommand.compareRates;
 import com.cyprias.DynamicDropRate.configuration.Config;
 
 public class ResetCommand implements Command {

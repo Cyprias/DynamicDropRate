@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 
 import com.cyprias.DynamicDropRate.ChatUtils;
-import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.Perm;
 import com.cyprias.DynamicDropRate.Plugin;
 

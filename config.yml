@@ -9,8 +9,9 @@ properties:
   debug-messages: false
   affect-exp: true
   affect-drops: true
-  only-affect-player-kills: false
+  only-affect-player-kills: true
   save-frequency: 300
+  minimum-rate: .2
 mysql:
   hostname: localhost
   username: root
