@@ -60,8 +60,9 @@ public class EntityListener implements Listener {
 		
 		Double rate = Plugin.mobRates.get(eType);
 		
-		rate -= rateChange;
-
+		//if ((rate - rateChange) > Config.getDouble("properties.minimum-rate"))
+		
+		
 		
 		int exp = event.getDroppedExp();
 		
@@ -99,10 +100,14 @@ public class EntityListener implements Listener {
 			}
 		}
 		
+		rate -= rateChange;
+		
 		//Don't set rate below min rate.
-		if (rate < Config.getDouble("properties.minimum-rate"))
+		if (rate < Config.getDouble("properties.minimum-rate")){
+			if (Config.getBoolean("properties.debug-messages"))
+				Logger.info(eType + " can't go any lower.");
 			return;
-
+		}
 		if (Config.getBoolean("properties.debug-messages"))
 			Logger.info("- Decreasing " + eType + "'s rate to " + Plugin.Round(rate*100,2));
 		
