@@ -22,7 +22,6 @@ mysql:
 mobs:
   - blaze
   - cavespider
-  - creeper
   - skeleton
   - spider
   - zombie

@@ -12,11 +12,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/* Pulls version info from the project's files page on Curse. */
+
 public class VersionChecker {
 	public List<versionInfo> versions = new ArrayList<versionInfo>();
-	public VersionChecker(String curseRSS) throws SAXException, IOException, ParserConfigurationException {
+	public VersionChecker(String curseRSS) throws IOException, ParserConfigurationException {
 		URL url = new URL(curseRSS);
-		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(url.openConnection().getInputStream());
+		Document doc = null;
+		try {
+			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(url.openConnection().getInputStream());
+		} catch (SAXException e) {
+			//Socket error, forgo giving an error. 
+			return;
+		}
 		doc.getDocumentElement().normalize();
 		NodeList nodes = doc.getElementsByTagName("item");
 

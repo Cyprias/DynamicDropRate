@@ -19,9 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
-import org.xml.sax.SAXException;
-
-import com.cyprias.DynamicDropRate.VersionChecker.versionInfo;
 import com.cyprias.DynamicDropRate.command.CommandManager;
 import com.cyprias.DynamicDropRate.command.EqualizeCommand;
 import com.cyprias.DynamicDropRate.command.ListCommand;
@@ -191,7 +188,7 @@ public class Plugin extends JavaPlugin {
 			public void run() {
 				try {
 					VersionChecker version = new VersionChecker("http://dev.bukkit.org/server-mods/dynamicdroprate/files.rss");
-					versionInfo info = (version.versions.size() > 0) ? version.versions.get(0) : null;
+					VersionChecker.versionInfo info = (version.versions.size() > 0) ? version.versions.get(0) : null;
 					if (info != null) {
 						String curVersion = getDescription().getVersion();
 						if (VersionChecker.compareVersions(curVersion, info.getTitle()) < 0) {
@@ -199,8 +196,6 @@ public class Plugin extends JavaPlugin {
 							Logger.warning(info.getLink());
 						}
 					}
-				} catch (SAXException e) {
-					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (ParserConfigurationException e) {
