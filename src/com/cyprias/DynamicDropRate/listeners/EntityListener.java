@@ -99,8 +99,7 @@ public class EntityListener implements Listener {
 			}
 		}
 		
-		//Can't set rate below zero, don't increase other mob's rate.
-		//Logger.info("rate: " + rate + ", min: " + Config.getDouble("properties.minimum-rate"));
+		//Don't set rate below min rate.
 		if (rate < Config.getDouble("properties.minimum-rate"))
 			return;
 
