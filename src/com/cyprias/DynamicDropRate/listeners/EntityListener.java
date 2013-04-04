@@ -43,14 +43,12 @@ public class EntityListener implements Listener {
 
 			EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) dEvent;
 			if (!(damageEvent.getDamager() instanceof Player) && Config.getBoolean("properties.only-affect-player-kills") == true) {
-				if (Config.getBoolean("properties.debug-messages"))
-					Logger.info("Exiting death due to attacker being " + damageEvent.getDamager().getType());
+				Logger.debug("Exiting death due to attacker being " + damageEvent.getDamager().getType());
 				return;
 			}
 
 		}else if (Config.getBoolean("properties.only-affect-player-kills") == true){
-			if (Config.getBoolean("properties.debug-messages"))
-				Logger.info("Exiting death due to death having no attacker.");
+			Logger.debug("Exiting death due to death having no attacker.");
 			
 			return;
 		}
@@ -69,8 +67,7 @@ public class EntityListener implements Listener {
 		if (Config.getBoolean("properties.affect-exp")){
 			event.setDroppedExp((int) Math.round(exp * rate));
 		
-			if (Config.getBoolean("properties.debug-messages"))
-				Logger.info("Modifying " + eType + "'s exp " + exp + " * " + Plugin.Round(rate*100,2) + "% = " + (int) Math.round(exp * rate));
+			Logger.debug("Modifying " + eType + "'s exp " + exp + " * " + Plugin.Round(rate*100,2) + "% = " + (int) Math.round(exp * rate));
 			
 		}
 		
@@ -90,8 +87,7 @@ public class EntityListener implements Listener {
 				
 				iAmount = (int) Math.round(drops.get(i).getAmount() * rate);
 				
-				if (Config.getBoolean("properties.debug-messages"))
-					Logger.info("Modifying " + eType + "'s " + drops.get(i).getType() + "x" + drops.get(i).getAmount() + " * " + Plugin.Round(rate*100,2) + "% = x" + Math.round(drops.get(i).getAmount() * rate));
+				Logger.debug("Modifying " + eType + "'s " + drops.get(i).getType() + "x" + drops.get(i).getAmount() + " * " + Plugin.Round(rate*100,2) + "% = x" + Math.round(drops.get(i).getAmount() * rate));
 				
 				if (iAmount>0){
 					drops.get(i).setAmount(iAmount);

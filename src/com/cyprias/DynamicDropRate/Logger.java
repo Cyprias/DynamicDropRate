@@ -1,5 +1,8 @@
 package com.cyprias.DynamicDropRate;
 
+import com.cyprias.DynamicDropRate.configuration.Config;
+
+
 public class Logger {
 	private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger("AdminNotes");
 	private static final Plugin plugin = Plugin.getInstance();
@@ -62,5 +65,10 @@ public class Logger {
 
 	public static final String getLogPrefix() {
 		return String.format("[%s] v%s: ", plugin.getName(), plugin.getDescription().getVersion());
+	}
+	
+	public static void debug(String mess) {
+		if (Config.getBoolean("properties.debug-messages"))
+			logger.info(getLogPrefix() +"[Debug] "+ mess);
 	}
 }

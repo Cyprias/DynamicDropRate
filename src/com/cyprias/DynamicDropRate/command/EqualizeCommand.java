@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 
 import com.cyprias.DynamicDropRate.ChatUtils;
+import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.Perm;
 import com.cyprias.DynamicDropRate.Plugin;
 
@@ -70,7 +71,7 @@ public class EqualizeCommand  implements Command {
 		ChatUtils.send(sender, rates.size() + " mobs summing " + Plugin.Round((sum/rates.size())*100,2) + "%");
 		
 		double perMob = (1-sum / rates.size());
-		//Logger.info("perMob: " + perMob);
+		Logger.info("perMob: " + perMob);
 		
 		Double sRate;
 		if (perMob > 0){
@@ -87,7 +88,8 @@ public class EqualizeCommand  implements Command {
 			for (int i=0; i<Plugin.mobTypes.size(); i++){
 				mob = Plugin.mobTypes.get(i);
 				sRate = Plugin.mobRates.get(mob);
-				Plugin.mobRates.put(mob, sRate - perMob);
+				
+				Plugin.mobRates.put(mob, sRate - Math.abs(perMob));
 			}
 		}
 		try {
