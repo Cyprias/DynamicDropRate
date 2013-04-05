@@ -2,7 +2,7 @@ name: DynamicDropRate
 main: com.cyprias.DynamicDropRate.Plugin
 author: Cyprias
 description: Dynamicly change drop rates between mobs.
-version: 0.5.0
+version: 0.6.0
 
 commands:
   ddr:

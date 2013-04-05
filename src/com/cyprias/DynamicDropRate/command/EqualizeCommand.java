@@ -71,7 +71,7 @@ public class EqualizeCommand  implements Command {
 		ChatUtils.send(sender, rates.size() + " mobs summing " + Plugin.Round((sum/rates.size())*100,2) + "%");
 		
 		double perMob = (1-sum / rates.size());
-		Logger.info("perMob: " + perMob);
+		//Logger.info("perMob: " + perMob);
 		
 		Double sRate;
 		if (perMob > 0){
