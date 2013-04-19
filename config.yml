@@ -12,6 +12,7 @@ properties:
   only-affect-player-kills: true
   save-frequency: 300
   minimum-rate: .2
+  maximum-rate: 2
 mysql:
   hostname: localhost
   username: root

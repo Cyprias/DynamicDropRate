@@ -1,5 +1,6 @@
 package com.cyprias.DynamicDropRate.listeners;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.entity.EntityType;
@@ -65,10 +66,10 @@ public class EntityListener implements Listener {
 		int exp = event.getDroppedExp();
 		
 		if (Config.getBoolean("properties.affect-exp")){
-			event.setDroppedExp((int) Math.round(exp * rate));
-		
-			Logger.debug("Modifying " + eType + "'s exp " + exp + " * " + Plugin.Round(rate*100,2) + "% = " + (int) Math.round(exp * rate));
-			
+			int modExp = (int) Math.round(exp * rate);
+			event.setDroppedExp(Math.abs(modExp));
+
+			Logger.debug("Modifying " + eType + "'s exp " + exp + " * " + Plugin.Round(rate*100,2) + "% = " + Math.abs(modExp));
 		}
 		
 		if (Config.getBoolean("properties.affect-drops")){
@@ -99,35 +100,43 @@ public class EntityListener implements Listener {
 		rate -= rateChange;
 		
 		//Don't set rate below min rate.
-		if (rate < Config.getDouble("properties.minimum-rate")){
-			if (Config.getBoolean("properties.debug-messages"))
-				Logger.info(eType + " can't go any lower.");
+		if (rate <= Config.getDouble("properties.minimum-rate")){
+			Logger.debug(eType + " can't go any lower.");
 			return;
 		}
-		if (Config.getBoolean("properties.debug-messages"))
-			Logger.info("- Decreasing " + eType + "'s rate to " + Plugin.Round(rate*100,2));
-		
-		Plugin.mobRates.put(eType, rate);
 
+		
+		HashMap<EntityType, Double> rates = new HashMap<EntityType, Double>(Plugin.mobRates);
+		EntityType selectedMob = null;
 		int rad;
-		EntityType selectedMob;
-		while (true) {
-			rad = (int) Math.round(Math.random() * (Plugin.mobTypes.size()-1));
+		
+		while (rates.size() > 0){
+			rad = (int) Math.round(Math.random() * (rates.size()-1));
 			selectedMob = Plugin.mobTypes.get(rad);
-		//	Logger.info("rad: " + rad + ", selectedMob: " + selectedMob);
-			if (!selectedMob.equals(eType))
-				break;
+			if (selectedMob.equals(eType)){
+				rates.remove(selectedMob);
+				continue;
+			}
+			
+			if (rates.get(selectedMob) >= Config.getDouble("properties.maximum-rate")){
+				rates.remove(selectedMob);
+				continue;
+			}
+
+			break;
 		}
+		if (rates.get(selectedMob) >= Config.getDouble("properties.maximum-rate"))
+			return;
 
 		Double sRate = Plugin.mobRates.get(selectedMob);
 		sRate += rateChange;
 		
-		if (Config.getBoolean("properties.debug-messages"))
-			Logger.info("+ Increasing " + selectedMob + "'s rate to " + Plugin.Round(sRate*100,2) + "%");
+		Logger.debug("- Decreasing " + eType + "'s rate to " + Plugin.Round(rate*100,2));
+		Plugin.mobRates.put(eType, rate);
 		
+		Logger.debug("+ Increasing " + selectedMob + "'s rate to " + Plugin.Round(sRate*100,2) + "%");
 		Plugin.mobRates.put(selectedMob, sRate);
 		
-
 	}
 	
 }
