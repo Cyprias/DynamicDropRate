@@ -11,8 +11,6 @@ import org.xml.sax.SAXException;
 import com.cyprias.DynamicDropRate.ChatUtils;
 import com.cyprias.DynamicDropRate.Perm;
 import com.cyprias.DynamicDropRate.Plugin;
-import com.cyprias.DynamicDropRate.VersionChecker;
-import com.cyprias.DynamicDropRate.VersionChecker.versionInfo;
 import com.cyprias.DynamicDropRate.configuration.Config;
 
 public class VersionCommand implements Command {
@@ -31,35 +29,7 @@ public class VersionCommand implements Command {
 
 		final Plugin instance = Plugin.getInstance();
 
-		if (Config.getBoolean("properties.check-new-version")) {
-
-			instance.getServer().getScheduler().runTaskAsynchronously(instance, new Runnable() {
-				public void run() {
-					try {
-						VersionChecker version = new VersionChecker("http://dev.bukkit.org/server-mods/dynamicdroprate/files.rss");
-						versionInfo info = (version.versions.size() > 0) ? version.versions.get(0) : null;
-						String curVersion = instance.getDescription().getVersion();
-						if (info != null) {
-
-							if (VersionChecker.compareVersions(curVersion, info.getTitle()) < 0) {
-								ChatUtils.send(sender, "We're running v" + curVersion + ", v" + info.getTitle() + " is available");
-							} else {
-								ChatUtils.send(sender, "We're running the latest version v" + curVersion);
-							}
-						} else {
-							ChatUtils.send(sender, "We're running version v" + curVersion);
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (ParserConfigurationException e) {
-						e.printStackTrace();
-					}
-
-				}
-			});
-		} else {
-			ChatUtils.send(sender, "We're running version v" + instance.getDescription().getVersion());
-		}
+		ChatUtils.send(sender, "We're running version v" + instance.getDescription().getVersion());
 
 		return true;
 	}

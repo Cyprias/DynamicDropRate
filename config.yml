@@ -13,6 +13,7 @@ properties:
   save-frequency: 300
   minimum-rate: .2
   maximum-rate: 2
+  use-metrics: true
 mysql:
   hostname: localhost
   username: root

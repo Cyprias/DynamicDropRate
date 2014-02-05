@@ -131,15 +131,12 @@ public class Plugin extends JavaPlugin {
 		
 		
 		
-		
-		try {
-			Metrics metrics = new Metrics(this);
-			metrics.start();
-		} catch (IOException e) {
-		}
-
-		if (Config.getBoolean("properties.check-new-version"))
-			checkVersion();
+		if (Config.getBoolean("properties.use-metrics"))
+			try {
+				Metrics metrics = new Metrics(this);
+				metrics.start();
+			} catch (IOException e) {
+			}
 		
 		Logger.info("enabled.");
 	}
@@ -183,28 +180,6 @@ public class Plugin extends JavaPlugin {
 		}
 	}
 
-	private void checkVersion() {
-		getServer().getScheduler().runTaskAsynchronously(instance, new Runnable() {
-			public void run() {
-				try {
-					VersionChecker version = new VersionChecker("http://dev.bukkit.org/server-mods/dynamicdroprate/files.rss");
-					VersionChecker.versionInfo info = (version.versions.size() > 0) ? version.versions.get(0) : null;
-					if (info != null) {
-						String curVersion = getDescription().getVersion();
-						if (VersionChecker.compareVersions(curVersion, info.getTitle()) < 0) {
-							Logger.warning("We're running v" + curVersion + ", v" + info.getTitle() + " is available");
-							Logger.warning(info.getLink());
-						}
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (ParserConfigurationException e) {
-					e.printStackTrace();
-				}
-
-			}
-		});
-	}
 
 	Listener[] listenerList;
 
@@ -235,7 +210,7 @@ public class Plugin extends JavaPlugin {
 		this.getCommand("ddr").setExecutor(null);
 		
 		
-		instance.getServer().getScheduler().cancelAllTasks();
+		instance.getServer().getScheduler().cancelTasks(instance);
 		
 		EntityListener.unregisterEvents(instance);
 

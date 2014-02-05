@@ -22,13 +22,14 @@ public class ReloadCommand implements Command {
 			return true;
 		}*/
 		
+		
+		
 		Plugin instance = Plugin.getInstance();
-		
 		instance.reloadConfig();
-		instance.getPluginLoader().disablePlugin(instance);
-		instance.getPluginLoader().enablePlugin(instance);
 		
-		
+		//instance.getPluginLoader().disablePlugin(instance);
+		//instance.getPluginLoader().enablePlugin(instance);
+
 		ChatUtils.send(sender, "Plugin reloaded.");
 		
 
