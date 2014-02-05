@@ -1,17 +1,11 @@
 package com.cyprias.DynamicDropRate.command;
 
-import java.io.IOException;
 import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.bukkit.command.CommandSender;
-import org.xml.sax.SAXException;
-
 import com.cyprias.DynamicDropRate.ChatUtils;
 import com.cyprias.DynamicDropRate.Perm;
 import com.cyprias.DynamicDropRate.Plugin;
-import com.cyprias.DynamicDropRate.configuration.Config;
 
 public class VersionCommand implements Command {
 	public void listCommands(CommandSender sender, List<String> list) {
