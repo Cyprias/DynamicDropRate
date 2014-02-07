@@ -7,12 +7,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Listener;
@@ -141,10 +143,90 @@ public class Plugin extends JavaPlugin {
 		Logger.info("enabled.");
 	}
 
-	public static HashMap<EntityType, Double> mobRates = new HashMap<EntityType, Double>();
+	//private static HashMap<String, HashMap<EntityType, Double>> mobRates = new HashMap<String, HashMap<EntityType, Double>>();
+	private static HashMap<EntityType, HashMap<String, Double>> mobRates = new HashMap<EntityType, HashMap<String, Double>>();
+	
+	public static String getWorldGroup(String worldName){
+		
+		Set<String> groups = Config.getConfigurationSection("world-groups").getKeys(false);
+		
+		//Logger.debug("Checking which group " + worldName + " is in.");
+		
+		for (String group : groups) {
+			//Logger.debug("group: " + group);
+			
+			if (group.equalsIgnoreCase(worldName))
+				return group;
+
+			List<String> worlds = Config.getConfigurationSection("world-groups").getStringList(group);
+
+			for (String world : worlds) {
+			//	Logger.debug("group: " + group + " world " + world);
+				
+				if (world.equalsIgnoreCase(worldName)){
+					
+				//	Logger.debug(worldName + " is in " + group);
+					
+					return group;
+				}
+			}
+			
+			
+		}
+		
+		return null;
+	}
+	
+	
+	public static double getMobRate(EntityType eType, String world){
+		String worldGroup = getWorldGroup(world);
+		
+		if (worldGroup != null)
+			if (mobRates.containsKey(eType))
+				if (mobRates.get(eType).containsKey(worldGroup))
+					return mobRates.get(eType).get(worldGroup);
+
+		return 1.0;
+	}
+	
+	public static void setMobRate(EntityType eType, String world, Double rate){
+		String worldGroup = getWorldGroup(world);
+		
+		if (worldGroup != null){
+			if (!mobRates.containsKey(eType))
+				mobRates.put(eType, new HashMap<String, Double>());
+
+			mobRates.get(eType).put(worldGroup, rate);
+		}
+	}
+	
+	public static boolean watchingMob(EntityType eType, String world){
+		
+		if (mobRates.containsKey(eType)){
+			//if (mobRates.get(eType).containsKey(world))
+				return true;
+			
+		}
+		return false;
+	}
+	
+	public static HashMap<String, Double> getMobWorlds(EntityType eType){
+		if (mobRates.containsKey(eType))
+			return mobRates.get(eType);
+				
+		return null;
+	}
+	
+	public static List<String> getMobs(){
+		return Config.getStringList("mobs");
+	}
+	
+	
 	public static List<EntityType> mobTypes = new ArrayList<EntityType>();
 
-	private void loadMobRates() throws SQLException {
+	private static void loadMobRates() throws SQLException {
+		Set<String> worlds = Config.getConfigurationSection("world-groups").getKeys(false);
+		
 
 		List<String> mobs = Config.getStringList("mobs");
 		// http://jd.bukkit.org/doxygen/d6/d7b/EntityType_8java_source.html
@@ -153,23 +235,45 @@ public class Plugin extends JavaPlugin {
 		mobRates.clear();
 		mobTypes.clear();
 		
-		for (String mob : mobs) {
-			eType = EntityType.fromName(mob);
-			if (eType != null) {
-				mobRates.put(eType, database.getRate(eType.getName()));
-				mobTypes.add(eType);
-				if (Config.getBoolean("properties.debug-messages"))
-					Logger.info("Added " + eType + " to tracking.");
-			} else {
-				Logger.warning(mob + " is not a valid mob.");
+		
+		for (String world : worlds) {
+			for (String mob : mobs) {
+				eType = EntityType.fromName(mob);
+				//eType = EntityType.valueOf(mob.toUpperCase());
+
+				//EntityType.fromId(id)
+				
+				if (eType != null) {
+					//mobRates.put(eType, database.getRate(eType.getName(), world));
+					
+					setMobRate(eType, world, database.getRate(eType.getName(), world));
+					
+					if (!mobTypes.contains(eType))
+						mobTypes.add(eType);
+					
+					
+					if (Config.getBoolean("properties.debug-messages"))
+						Logger.info("Added " + eType + " to tracking.");
+				} else {
+					Logger.warning(mob + " is not a valid mob.");
+				}
 			}
 		}
-
 	}
 
 	public static void saveMobRates() throws SQLException {
-		for (EntityType type : mobTypes) {
-			database.setRate(type.toString(), mobRates.get(type));
+		for (String world : Config.getConfigurationSection("world-groups").getKeys(false)) {
+			for (EntityType type : mobTypes) {
+
+				double rate = getMobRate(type, world);
+				
+				Logger.debug("Saving " + type + " " + rate + "% " + world + " to db");
+				
+				database.setRate(type.toString(),rate, world);
+				
+				
+				
+			}
 		}
 	}
 
@@ -218,8 +322,10 @@ public class Plugin extends JavaPlugin {
 		Logger.info("disabled.");
 	}
 
-	public static void reload() {
+	public static void reload() throws SQLException {
+		saveMobRates();
 		instance.reloadConfig();
+		loadMobRates();
 	}
 
 	static public boolean hasPermission(CommandSender sender, Perm permission) {
@@ -296,6 +402,13 @@ public class Plugin extends JavaPlugin {
 
 	public static String Round(double val) {
 		return Round(val, 0);
+	}
+	
+	public static double dRound(double Rval, int Rpl) {
+		double p = (double) Math.pow(10, Rpl);
+		Rval = Rval * p;
+		double tmp = Math.round(Rval);
+		return (double) tmp / p;
 	}
 
 }

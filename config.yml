@@ -3,7 +3,6 @@ properties:
   chat-prefix: '&7[&dDDR&7] '
   db-type: sqlite
   permission-default: op
-  check-new-version: true
   async-db-queries: true
   rate-change: 0.1
   debug-messages: false
@@ -22,15 +21,18 @@ mysql:
   database: minecraft
   prefix: DDR_
 mobs:
-  - blaze
-  - cavespider
-  - skeleton
-  - spider
-  - zombie
-  - Enderman
-  - PigZombie
-  - witch
-excluded-worlds:
-  - CreativeWorld
+  - BLAZE
+  - CAVESPIDER
+  - SKELETON
+  - SPIDER
+  - ZOMBIE
+  - ENDERMAN
+  - PIGZOMBIE
+  - WITCH
 excluded-items: 
   - 289
+world-groups: 
+  default:
+    - world
+    - world_nether
+    - world_the_end

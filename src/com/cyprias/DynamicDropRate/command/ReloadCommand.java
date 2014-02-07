@@ -1,5 +1,6 @@
 package com.cyprias.DynamicDropRate.command;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
@@ -22,7 +23,12 @@ public class ReloadCommand implements Command {
 			return true;
 		}*/
 		
-		Plugin.reload();
+		try {
+			Plugin.reload();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		//instance.getPluginLoader().disablePlugin(instance);
 		//instance.getPluginLoader().enablePlugin(instance);

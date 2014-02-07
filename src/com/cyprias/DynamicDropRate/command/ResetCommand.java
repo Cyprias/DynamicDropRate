@@ -3,6 +3,7 @@ package com.cyprias.DynamicDropRate.command;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -57,17 +58,25 @@ public class ResetCommand implements Command {
 		EntityType eType;
 
 		Plugin.mobTypes.clear();
+
 		
-		for (String mob : mobs) {
-			eType = EntityType.fromName(mob);
-			if (eType != null) {
-				Plugin.mobRates.put(eType, 1.0);
-				Plugin.mobTypes.add(eType);
-			} else {
-				Logger.warning(mob + " is not a valid mob.");
+		Set<String> groups = Config.getConfigurationSection("world-groups").getKeys(false);
+
+		for (String group : groups) {
+			for (String mob : mobs) {
+				eType = EntityType.fromName(mob);
+				if (eType != null) {
+					Plugin.setMobRate(eType, group, 1.0);
+
+					if (!Plugin.mobTypes.contains(eType))
+						Plugin.mobTypes.add(eType);
+				} else {
+					Logger.warning(mob + " is not a valid mob.");
+				}
 			}
 		}
-
+		
+		
 		
 		
 		Plugin instance;

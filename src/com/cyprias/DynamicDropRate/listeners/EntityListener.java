@@ -29,16 +29,20 @@ public class EntityListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDeath(EntityDeathEvent event)  {
-		if (Config.inStringList("excluded-worlds", event.getEntity().getWorld().getName()))
-			return;
-		
 		LivingEntity entity = event.getEntity();
+		
+		String world = entity.getWorld().getName();
 		
 		EntityType eType = entity.getType();
 		
-		if (!Plugin.mobRates.containsKey(eType))
+		
+		
+		if (!Plugin.watchingMob(eType, world)){
+			Logger.debug("Not watching " + eType + " in " + world);
 			return;
-
+		}
+		
+		
 		EntityDamageEvent dEvent = event.getEntity().getLastDamageCause();
 		if (dEvent instanceof EntityDamageByEntityEvent) {
 
@@ -57,7 +61,9 @@ public class EntityListener implements Listener {
 		double rateChange = Config.getDouble("properties.rate-change")/100;
 		
 		
-		Double rate = Plugin.mobRates.get(eType);
+		//String world = entity.getWorld().getName();
+
+		Double rate = Plugin.getMobRate(eType, world);
 		
 		//if ((rate - rateChange) > Config.getDouble("properties.minimum-rate"))
 		
@@ -106,36 +112,54 @@ public class EntityListener implements Listener {
 		}
 
 		
-		HashMap<EntityType, Double> rates = new HashMap<EntityType, Double>(Plugin.mobRates);
-		EntityType selectedMob = null;
-		int rad;
 		
-		while (rates.size() > 0){
-			rad = (int) Math.round(Math.random() * (rates.size()-1));
-			selectedMob = Plugin.mobTypes.get(rad);
-			if (selectedMob.equals(eType)){
-				rates.remove(selectedMob);
-				continue;
-			}
+		List<String> mobs = Plugin.getMobs();
+		EntityType selectedMob;
+		
+		//while (mobs.size() > 0){
+		// Remove mobs we don't want to modify.
+		//for (String mob : mobs) {
+		for (int i=mobs.size()-1;i>=0;i--){
 			
-			if (rates.get(selectedMob) >= Config.getDouble("properties.maximum-rate")){
-				rates.remove(selectedMob);
+			
+			
+			String mob = mobs.get(i);
+			
+			selectedMob = EntityType.fromName(mob.toUpperCase());
+			// Skip the mob type we're currently killing.
+			if (mob.equalsIgnoreCase(entity.getType().toString())){
+//				Logger.debug("Removing " + mob + " due to match.");
+				mobs.remove(i);
+				continue;
+			}
+			// Skip mobs if they're above the max rate.
+			if (Plugin.getMobRate(selectedMob, world) >= Config.getDouble("properties.maximum-rate")){
+				mobs.remove(i);
 				continue;
 			}
 
-			break;
 		}
-		if (rates.get(selectedMob) >= Config.getDouble("properties.maximum-rate"))
-			return;
-
-		Double sRate = Plugin.mobRates.get(selectedMob);
+		
+		// Select a random mob.
+		int rad = (int) Math.round(Math.random() * (mobs.size()-1));
+	
+		//selectedMob = Plugin.mobTypes.get(mobs.get(rad));
+		
+		selectedMob = EntityType.fromName(mobs.get(rad));
+		
+		// Get their rate.
+		Double sRate = Plugin.getMobRate(selectedMob, world);
 		sRate += rateChange;
+
+		Logger.debug("- Decreasing " + eType + "'s rate to " + Plugin.Round(rate*100,2) + "% in " + world);
+		Plugin.setMobRate(eType, world, Plugin.dRound(rate, 6));
+
 		
-		Logger.debug("- Decreasing " + eType + "'s rate to " + Plugin.Round(rate*100,2));
-		Plugin.mobRates.put(eType, rate);
+		Logger.debug("+ Increasing " + selectedMob + "'s rate to " + Plugin.Round(sRate*100,2) + "% in " + world);
+		Plugin.setMobRate(selectedMob, world, Plugin.dRound(sRate, 6));
 		
-		Logger.debug("+ Increasing " + selectedMob + "'s rate to " + Plugin.Round(sRate*100,2) + "%");
-		Plugin.mobRates.put(selectedMob, sRate);
+		
+		
 		
 	}
 	

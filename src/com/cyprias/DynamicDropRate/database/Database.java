@@ -6,9 +6,9 @@ public interface Database {
 	
 	Boolean init();
 	
-	Double getRate(String entityType) throws SQLException;
+	Double getRate(String entityType, String world) throws SQLException;
 	
-	Boolean setRate(String entityType, Double rate) throws SQLException;
+	Boolean setRate(String entityType, Double rate, String world) throws SQLException;
 	
 	
 }

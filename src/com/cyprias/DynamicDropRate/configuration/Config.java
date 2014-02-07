@@ -2,6 +2,8 @@ package com.cyprias.DynamicDropRate.configuration;
 
 import java.util.List;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import com.cyprias.DynamicDropRate.Plugin;
 
 
@@ -31,6 +33,10 @@ public class Config {
 
 	public static List<String> getStringList(String property) {
 		return plugin.getConfig().getStringList(property);
+	}
+	
+	public static ConfigurationSection getConfigurationSection(String property){
+		return plugin.getConfig().getConfigurationSection(property);
 	}
 	
 	public static Boolean inStringList(String property, String find){

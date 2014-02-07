@@ -40,7 +40,7 @@ public class MySQL implements Database {
 		
 		if (tableExists(rates_table) == false) {
 			Logger.info("Creating "+rates_table+" table.");
-			con.prepareStatement("CREATE TABLE `"+rates_table+"` (`type` VARCHAR(16) NOT NULL, `rate` DOUBLE NOT NULL, UNIQUE (`type`)) ENGINE = InnoDB").executeUpdate();
+			con.prepareStatement("CREATE TABLE `"+rates_table+"` (`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, `type` VARCHAR(16) NOT NULL, `rate` DOUBLE NOT NULL, `world` VARCHAR(16) NOT NULL) ENGINE = InnoDB").executeUpdate();
 		}
 		
 	}
@@ -134,8 +134,8 @@ public class MySQL implements Database {
 
 
 	@Override
-	public Double getRate(String entityType) throws SQLException {
-		queryReturn results = executeQuery("SELECT * FROM `"+rates_table+"` WHERE `type` LIKE ? LIMIT 0 , 1", entityType);
+	public Double getRate(String entityType, String world) throws SQLException {
+		queryReturn results = executeQuery("SELECT * FROM `"+rates_table+"` WHERE `type` LIKE ? AND `world` LIKE ? LIMIT 0 , 1", entityType, world);
 		ResultSet r = results.result;
 		Double rate = 1.0; //1 = 100%
 		while (r.next()) {
@@ -147,12 +147,12 @@ public class MySQL implements Database {
 
 
 	@Override
-	public Boolean setRate(String entityType, Double rate) throws SQLException {
-		int succsess = executeUpdate("UPDATE `"+rates_table+"` SET `rate` = ? WHERE `type` = ?;", rate, entityType);
+	public Boolean setRate(String entityType, Double rate, String world) throws SQLException {
+		int succsess = executeUpdate("UPDATE `"+rates_table+"` SET `rate` = ? WHERE `type` = ? AND `world` = ?;", rate, entityType, world);
 		if (succsess > 0)
 			return true;
 
-		succsess = executeUpdate("INSERT INTO `"+rates_table+"` (`type` ,`rate`) VALUES (?, ?);", entityType, rate);
+		succsess = executeUpdate("INSERT INTO `"+rates_table+"` (`type` ,`rate`, `world`) VALUES (?, ?, ?);", entityType, rate, world);
 		return (succsess > 0) ? true : false;
 	}
 

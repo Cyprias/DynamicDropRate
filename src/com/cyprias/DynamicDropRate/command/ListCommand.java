@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import com.cyprias.DynamicDropRate.ChatUtils;
 import com.cyprias.DynamicDropRate.Perm;
 import com.cyprias.DynamicDropRate.Plugin;
+import com.cyprias.DynamicDropRate.configuration.Config;
 
 public class ListCommand implements Command {
 	
@@ -52,32 +54,42 @@ public class ListCommand implements Command {
 		
 		EntityType mob;
 		Double rate;
-		List<MobRate> rates = new ArrayList<MobRate>();
+		List<MobRate> rates; //new ArrayList<MobRate>();
 		
-		Double sum = 0.0;
+		Double sum;
+		/**/
 		
-		for (int i=0; i<Plugin.mobTypes.size(); i++){
-			mob = Plugin.mobTypes.get(i);
-			rate = Plugin.mobRates.get(mob);
+		Set<String> groups = Config.getConfigurationSection("world-groups").getKeys(false);
+
+		for (String group : groups) {
+			rates = new ArrayList<MobRate>();
+			sum = 0.0;
 			
-			rates.add(new MobRate(mob, rate));
-			sum+= rate;
+			for (int i=0; i<Plugin.mobTypes.size(); i++){
+				mob = Plugin.mobTypes.get(i);
+				//rate = Plugin.mobRates.get(mob);
+				rate = Plugin.getMobRate(mob, group);
+				
+				
+				rates.add(new MobRate(mob, rate));
+				sum+= rate;
+				
+				//.send(sender, mob.getName() + ": " + Plugin.Round(rate*100,2) + "%");
+				
+				
+				
+			}
+		
+		
+			compareRates comparator = new compareRates();
+			Collections.sort(rates, comparator);
 			
-			//.send(sender, mob.getName() + ": " + Plugin.Round(rate*100,2) + "%");
+			ChatUtils.send(sender, group + ": " + rates.size() + " mobs summing " + Plugin.Round((sum/rates.size())*100,2) + "%");
 			
-			
-			
+			for (int i=0; i<rates.size(); i++)
+				ChatUtils.send(sender, "  " + rates.get(i).type.getName() + ": " + Plugin.Round(rates.get(i).rate*100,2) + "%");
+		
 		}
-		
-		compareRates comparator = new compareRates();
-		Collections.sort(rates, comparator);
-		
-		ChatUtils.send(sender, rates.size() + " mobs summing " + Plugin.Round((sum/rates.size())*100,2) + "%");
-		
-		for (int i=0; i<rates.size(); i++)
-			ChatUtils.send(sender, rates.get(i).type.getName() + ": " + Plugin.Round(rates.get(i).rate*100,2) + "%");
-		
-		
 		
 		
 

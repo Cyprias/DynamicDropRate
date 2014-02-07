@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -12,6 +13,7 @@ import com.cyprias.DynamicDropRate.ChatUtils;
 import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.Perm;
 import com.cyprias.DynamicDropRate.Plugin;
+import com.cyprias.DynamicDropRate.configuration.Config;
 
 public class EqualizeCommand  implements Command {
 	
@@ -55,43 +57,86 @@ public class EqualizeCommand  implements Command {
 		
 		EntityType mob;
 		Double rate;
-		List<MobRate> rates = new ArrayList<MobRate>();
+		List<MobRate> rates;
 		
-		Double sum = 0.0;
+		Double sum;
 		
-		for (int i=0; i<Plugin.mobTypes.size(); i++){
-			mob = Plugin.mobTypes.get(i);
-			rate = Plugin.mobRates.get(mob);
+		
+		
+		Set<String> groups = Config.getConfigurationSection("world-groups").getKeys(false);
+
+		for (String group : groups) {
+			sum = 0.0;
+			rates = new ArrayList<MobRate>();
 			
-			rates.add(new MobRate(mob, rate));
-			sum+= rate;
-
-		}
-
-		ChatUtils.send(sender, rates.size() + " mobs summing " + Plugin.Round((sum/rates.size())*100,2) + "%");
-		
-		double perMob = (1-sum / rates.size());
-		//Logger.info("perMob: " + perMob);
-		
-		Double sRate;
-		if (perMob > 0){
-			ChatUtils.send(sender, "Increasing all mobs by " + Plugin.Round(perMob*100,2) + "%" );
 			
 			for (int i=0; i<Plugin.mobTypes.size(); i++){
 				mob = Plugin.mobTypes.get(i);
-				sRate = Plugin.mobRates.get(mob);
-				Plugin.mobRates.put(mob, sRate + perMob);
+				rate = Plugin.getMobRate(mob, group);
+
+				rates.add(new MobRate(mob, rate));
+				sum+= rate;
+
 			}
 			
-		}else{
-			ChatUtils.send(sender, "Decreasing all mobs by " + Plugin.Round(perMob*100,2) + "%" );
-			for (int i=0; i<Plugin.mobTypes.size(); i++){
-				mob = Plugin.mobTypes.get(i);
-				sRate = Plugin.mobRates.get(mob);
+			ChatUtils.send(sender, group + ": " + rates.size() + " mobs summing " + Plugin.Round((sum/rates.size())*100,2) + "%");
+			
+			double perMob = (1-sum / rates.size());
+			
+			/*
+			Double sRate;
+			if (perMob > 0){
+				ChatUtils.send(sender, "Increasing all mobs by " + Plugin.Round(perMob*100,2) + "%" );
 				
-				Plugin.mobRates.put(mob, sRate - Math.abs(perMob));
+				for (int i=0; i<Plugin.mobTypes.size(); i++){
+					mob = Plugin.mobTypes.get(i);
+					sRate = Plugin.mobRates.get(mob);
+					Plugin.mobRates.put(mob, sRate + perMob);
+				}
+				
+			}else{
+				ChatUtils.send(sender, "Decreasing all mobs by " + Plugin.Round(perMob*100,2) + "%" );
+				for (int i=0; i<Plugin.mobTypes.size(); i++){
+					mob = Plugin.mobTypes.get(i);
+					sRate = Plugin.mobRates.get(mob);
+					
+					Plugin.mobRates.put(mob, sRate - Math.abs(perMob));
+				}
 			}
+			*/
+			
+			
+			Double sRate;
+			if (perMob > 0){
+				ChatUtils.send(sender, "  Increasing all mobs by " + Plugin.Round(perMob*100,2) + "%" );
+				
+				for (int i=0; i<Plugin.mobTypes.size(); i++){
+					mob = Plugin.mobTypes.get(i);
+					sRate = Plugin.getMobRate(mob, group);
+					
+					Plugin.setMobRate(mob, group, sRate + perMob);
+					
+				}
+				
+			}else{
+				ChatUtils.send(sender, "  Decreasing all mobs by " + Plugin.Round(perMob*100,2) + "%" );
+				for (int i=0; i<Plugin.mobTypes.size(); i++){
+					mob = Plugin.mobTypes.get(i);
+					sRate = Plugin.getMobRate(mob, group);
+				
+					Plugin.setMobRate(mob, group, sRate - Math.abs(perMob));
+				}
+			}
+			
+			
 		}
+		
+
+
+		
+		
+		
+		
 		try {
 			Plugin.saveMobRates();
 		} catch (SQLException e) {
