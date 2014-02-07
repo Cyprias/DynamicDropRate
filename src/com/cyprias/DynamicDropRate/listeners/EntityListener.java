@@ -152,11 +152,11 @@ public class EntityListener implements Listener {
 		sRate += rateChange;
 
 		Logger.debug("- Decreasing " + eType + "'s rate to " + Plugin.Round(rate*100,2) + "% in " + world);
-		Plugin.setMobRate(eType, world, Plugin.dRound(rate, 6));
+		Plugin.setMobRate(eType, world, Plugin.dRound(rate, 8));
 
 		
 		Logger.debug("+ Increasing " + selectedMob + "'s rate to " + Plugin.Round(sRate*100,2) + "% in " + world);
-		Plugin.setMobRate(selectedMob, world, Plugin.dRound(sRate, 6));
+		Plugin.setMobRate(selectedMob, world, Plugin.dRound(sRate, 8));
 		
 		
 		

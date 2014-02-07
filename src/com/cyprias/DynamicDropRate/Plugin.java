@@ -236,24 +236,25 @@ public class Plugin extends JavaPlugin {
 		mobTypes.clear();
 		
 		
+
 		for (String world : worlds) {
 			for (String mob : mobs) {
 				eType = EntityType.fromName(mob);
+				
+				// Value Of gives me errors claiming CAVESPIDER doesn't exist, when I do CAVE_SPIDER I get no error but it doesn't return anything. =/
 				//eType = EntityType.valueOf(mob.toUpperCase());
 
-				//EntityType.fromId(id)
-				
 				if (eType != null) {
-					//mobRates.put(eType, database.getRate(eType.getName(), world));
-					
-					setMobRate(eType, world, database.getRate(eType.getName(), world));
+
+					Double rate = database.getRate(eType.getName(), world);
+
+					setMobRate(eType, world, rate);
 					
 					if (!mobTypes.contains(eType))
 						mobTypes.add(eType);
 					
-					
-					if (Config.getBoolean("properties.debug-messages"))
-						Logger.info("Added " + eType + " to tracking.");
+				
+					Logger.debug("Loading " + eType + " " + rate + "% " + world + " from db");
 				} else {
 					Logger.warning(mob + " is not a valid mob.");
 				}
@@ -266,13 +267,11 @@ public class Plugin extends JavaPlugin {
 			for (EntityType type : mobTypes) {
 
 				double rate = getMobRate(type, world);
+
+				Logger.debug("Saving " + type.getName() + " " + rate + "% " + world + " to db");
 				
-				Logger.debug("Saving " + type + " " + rate + "% " + world + " to db");
-				
-				database.setRate(type.toString(),rate, world);
-				
-				
-				
+				database.setRate(type.getName(),rate, world);
+
 			}
 		}
 	}

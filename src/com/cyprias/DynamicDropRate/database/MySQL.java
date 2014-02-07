@@ -137,7 +137,7 @@ public class MySQL implements Database {
 	public Double getRate(String entityType, String world) throws SQLException {
 		queryReturn results = executeQuery("SELECT * FROM `"+rates_table+"` WHERE `type` LIKE ? AND `world` LIKE ? LIMIT 0 , 1", entityType, world);
 		ResultSet r = results.result;
-		Double rate = 1.0; //1 = 100%
+		Double rate = -1.0; //Oh oh.
 		while (r.next()) {
 			rate = r.getDouble("rate");
 		}
@@ -148,7 +148,7 @@ public class MySQL implements Database {
 
 	@Override
 	public Boolean setRate(String entityType, Double rate, String world) throws SQLException {
-		int succsess = executeUpdate("UPDATE `"+rates_table+"` SET `rate` = ? WHERE `type` = ? AND `world` = ?;", rate, entityType, world);
+		int succsess = executeUpdate("UPDATE `"+rates_table+"` SET `rate` = ? WHERE `type` LIKE ? AND `world` LIKE ?;", rate, entityType, world);
 		if (succsess > 0)
 			return true;
 
