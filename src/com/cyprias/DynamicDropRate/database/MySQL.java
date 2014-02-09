@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.configuration.Config;
@@ -41,8 +42,31 @@ public class MySQL implements Database {
 		if (tableExists(rates_table) == false) {
 			Logger.info("Creating "+rates_table+" table.");
 			con.prepareStatement("CREATE TABLE `"+rates_table+"` (`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, `type` VARCHAR(16) NOT NULL, `rate` DOUBLE NOT NULL, `world` VARCHAR(16) NOT NULL) ENGINE = InnoDB").executeUpdate();
+		}	else if (tableFieldExists(rates_table, "world") == false) {
+			con.prepareStatement("ALTER TABLE `"+rates_table+"` ADD `world` VARCHAR( 16 ) NOT NULL DEFAULT 'default';").executeUpdate();
 		}
+
+	}
+	
+	public static boolean tableFieldExists(String table, String field) throws SQLException {
+		boolean found = false;
+		queryReturn results = executeQuery("SELECT * FROM " + table + ";");
 		
+		ResultSetMetaData rsMetaData = results.result.getMetaData();
+		int numberOfColumns = rsMetaData.getColumnCount();
+
+		String columnName;
+		for (int i = 1; i < numberOfColumns + 1; i++) {
+			columnName = rsMetaData.getColumnName(i);
+			if (columnName.equalsIgnoreCase(field)) {
+				found = true;
+				break;
+			}
+		}
+
+		results.close();
+
+		return found;
 	}
 	
 	public static class queryReturn {

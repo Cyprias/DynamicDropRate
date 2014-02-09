@@ -5,10 +5,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import com.cyprias.DynamicDropRate.Logger;
 import com.cyprias.DynamicDropRate.Plugin;
+import com.cyprias.DynamicDropRate.database.MySQL.queryReturn;
 
 public class SQLite implements Database {
 	private static String sqlDB;
@@ -61,6 +63,8 @@ public class SQLite implements Database {
 		if (tableExists(rates_table) == false) {
 			Logger.info("Creating SQLite " + rates_table + " table.");
 			stat.executeUpdate("CREATE TABLE `"+rates_table+"` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `type` VARCHAR(16) NOT NULL, `rate` DOUBLE NOT NULL, `world` VARCHAR(16) NOT NULL)");
+		//}	else if (tableFieldExists(rates_table, "world") == false) {
+			//SQLite doesn't support adding tables. I don't want to recreate the table crap. 
 		}
 		
 		stat.close();
